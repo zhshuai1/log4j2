@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	这里定义了两个Appender，名称分别为A1和STDOUT，A1输出到文件，STDOUT输出到console；
+	这里设置Root Logger的level为warn，输出级别大于warn的日志，如果程序中使用了一个名字没有在<Logger>标签定义
+	的Logger，则默认使用Root定义的属性，当产生log时，会使用A1和STDOUT APPender进行输出；
+	这里定义了一个Logger，名字为com.zs.LogSetup，允许和父亲log进行叠加，同时他定义了level，会覆盖父亲log中的
+	level定义，输出debug级别以上的log，使用A1 Appender进行输出，同时由于是Additivity，因此也会调用父亲Log
+	的Appender进行输出，因此在A1.log中有两份log：Root和LogSetup，在控制台也有两份输出：com和Root；
+	这里定义了名字为com的Logger，由于存在继承机制，com.zs.LogSetup也会应用父亲log的定义；
+	注意已经被注释掉的过滤器的用法。
+ -->
+
+<Configuration>
+  <Appenders>
+    <File name="A1" fileName="A1.log" append="false">
+      <!--
+      <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>  
+      -->
+      <PatternLayout pattern="%d %t %-5p %c{2} - %m%n"/>
+    </File>
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{yy-MM-dd HH-mm-ss.SSS z} %-5p [%t] %C{2} (%F:%L) - %m%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Logger name="com.zs.LogSetup" level="debug" additivity="true">
+        <AppenderRef ref="A1"/>
+    </Logger>
+     <Logger name="com" level="info" additivity="true">
+        <AppenderRef ref="STDOUT"/>
+    </Logger>
+    <Root level="warn">
+      <AppenderRef ref="A1" />      
+      <AppenderRef ref="STDOUT" />
+    </Root>
+  </Loggers>
+</Configuration>
